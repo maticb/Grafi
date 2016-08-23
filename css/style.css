@@ -1,11 +1,38 @@
+body,html {
+	width:100%;
+	height:100%;
+	padding:0;
+	margin:0;
+}
+
 /* popup styling */
 #popup {
 	width:100%;
 	height:100%;
+	display:none;
 }
 
 #popup .overlay{
 	background-color: grey;
 	opacity:0.3;
+	width:100%;
+	height:100%;
+}
+
+#popup .popup-content-wrapper{
+	position:fixed;
+	left:50%;
+	top:50%;
+	padding:5px;
+	display:block;
+	border:1px solid grey;
+	border-radius:5px;
+	background-color:white;
+}
+
+#popup .popup-content{
+
+}
+#popup .popup-buttons{
 
 }
