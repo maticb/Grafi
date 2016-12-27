@@ -36,3 +36,20 @@ body,html {
 #popup .popup-buttons{
 
 }
+
+
+/* Menu */
+.menu {
+	width:100%;
+}
+.menu ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+
+}
+
+.menu ul li {
+	margin-left:10px;
+	float:left;
+}
