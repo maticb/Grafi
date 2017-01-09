@@ -15,12 +15,12 @@ var GLOBAL_ARGS_NUM = 7; // Number of arguments in the first line (global)
 
 var exampleInput  = ''+
 '1;ime1;["param1","param2","param3"];1;problem1;3;["param1","param2"];'+
-'{1;1;-1,-1;00000;1;5;[3,3,3]}'+
-'{2;1;-1,-1;00000;1;3;[2,3,1]}'+
-'{3;1;-1,-1;00000;1;4;[3,1,5]}'+
-'{4;1;-1,-1;00000;1;2;[3,2,1]}'+
-'{5;2;1,3;00001;1;5;[3,3,3]}'+
-'{6;2;2,4;00001;1;3;[2,3,1]}';
+'{1;1;[-1,-1];00000;1;5;[3,3,3]}'+
+'{2;1;[-1,-1];00000;1;3;[2,3,1]}'+
+'{3;1;[-1,-1];00000;1;4;[3,1,5]}'+
+'{4;1;[-1,-1];00000;1;2;[3,2,1]}'+
+'{5;2;[1,3];00001;1;5;[3,3,3]}'+
+'{6;2;[2,4];00001;1;3;[2,3,1]}';
 
 /*
 * Loops over all items of a given string/array and triggers callback if item matches value
@@ -55,6 +55,15 @@ function indexOfAll(str, val, callback) {
 		}
 	}
 }
+
+/*
+* Universal function that parses array from argument string
+* @param string 	input 		String (JSON) of the given argument
+*/
+function parseArray(input){
+	return JSON.parse(input);
+}
+
 /*
 * Parses entire input text (document)
 * @param string	input 	String input
@@ -101,9 +110,6 @@ function parseInput(input){
 * @param integer	argNum 	argument's number
 */
 function parseArgs(obj, arg, argNum) {
-	function parseArray(){
-		return JSON.parse(arg);
-	}
 	switch(argNum){
 		case 0: { // algID
 			obj.algId = parseInt(arg);
@@ -114,7 +120,7 @@ function parseArgs(obj, arg, argNum) {
 			break;
 		}
 		case 2: { // [algParams]
-			obj.algParams = parseArray();
+			obj.algParams = parseArray(arg);
 			break;
 		}
 		case 3: { // problemID
@@ -130,13 +136,53 @@ function parseArgs(obj, arg, argNum) {
 			break;
 		}
 		case 6: { // [problemParams]
-			obj.problemParams = parseArray();
+			obj.problemParams = parseArray(arg);
 			break;
 		}
 	}
 	return obj;
 }
 
+/*
+* Parses argument via it's number inside line
+* @param string/array 	arg 	argument value
+* @param integer 		argNum 	argument's number
+*/
+function parseLineArg(obj, arg, argNum) {
+	switch(argNum) {
+		case 0: { // id
+			obj.id = parseInt(arg);
+			break;
+		}
+		case 1: { // generation
+			obj.generation = parseInt(arg);
+			break;
+		}
+		case 2: { // [parentIds]
+			obj.parentIds = parseArray(arg);
+			break;
+		}
+		case 3: { // timestamp
+			obj.timestamp = arg;
+			break;
+		}
+		case 4: { // eval
+			// TODO: poglej kaj je eval; integer/float?
+			obj.eval = arg;
+			break;
+		}
+		case 5: { // fitness
+			obj.fitness = parseFloat(arg);
+			break;
+		}
+		case 6: { // [x]
+			obj.x = parseArray(arg);
+			break;
+		}
+
+	}
+	return obj;
+}
 
 /*
 * Parses all the other lines of input
@@ -156,8 +202,7 @@ function parseLine(obj, line) {
 		if('' === item) {
 			return false;
 		}
-		console.log(prev + ": " + index + '--------' + count);
-		console.log(item);
+		parseLineArg(lineObj, item, count);
 	});
 	obj.steps.push(lineObj);
 }
