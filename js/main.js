@@ -29,11 +29,23 @@ var exampleInput  = ''+
 * @param function 		callback 	Callback function, triggered when item is matched with val
 */
 function indexOfAll(str, val, callback) {
+	// Compare value function, in case given value is array
+	function compareVal(val1) {
+		if('object' === typeof val){ // If val is array
+			for( var i in val) {
+				if(val[i] === val1)
+					return true;
+			}
+			return false;
+		} else {
+			return val === val1;
+		}
+	}
 	var indexes = [], i;
 	var prev = 0; // Last found index
 	var count = 0; // Counter of matched items
 	for(i = 0; i < str.length; i++){
-		if (str[i] === val){
+		if (compareVal(str[i])){
 			var stop = callback.call(str, i, prev, count);
 			// Check if callback returned true, breaks loop
 			if(true === stop)
@@ -49,8 +61,10 @@ function indexOfAll(str, val, callback) {
 */
 function parseInput(input){
 	var rtrn = {};
+	rtrn.steps = []; // Algorithm steps will be stored in array
+	// Parsing arguments
 	indexOfAll(input, ';', function(index, prev, count){
-		prev = prev > 0 ? prev + 1 : prev;
+		prev = prev > 0 ? prev + 1 : prev; // If previous index is above 0, add 1 (because that index is the ";")
 		var item =  this.substring(prev, index);
 		if('' === item) {
 			return false;
@@ -58,11 +72,24 @@ function parseInput(input){
 		if(count < GLOBAL_ARGS_NUM) {
 			parseArgs(rtrn, item, count);
 		} else {
-			parseLine(rtrn, item);
+			// End loop
+			return true;
 		}
 		//console.log(index + ' ' + prev);
 	});
+	//Parse the remaining lines
+	indexOfAll(input, ['{','}'], function(index, prev, count){
 
+		if(0 === prev) //If we found the first "{" pass
+			return false;
+		prev += 1; // Add 1  to prev (because that index is the "{" or "}")
+		var item =  this.substring(prev, index);
+		if('' === item) {
+			return false;
+		}
+		parseLine(rtrn, item);
+	});
+	console.log(rtrn);
 	return rtrn;
 }
 
@@ -74,29 +101,36 @@ function parseInput(input){
 * @param integer	argNum 	argument's number
 */
 function parseArgs(obj, arg, argNum) {
-
+	function parseArray(){
+		return JSON.parse(arg);
+	}
 	switch(argNum){
 		case 0: { // algID
+			obj.algId = parseInt(arg);
 			break;
 		}
 		case 1: { // algName
+			obj.algName =  arg;
 			break;
 		}
 		case 2: { // [algParams]
-			arg = JSON.parse(arg);
+			obj.algParams = parseArray();
 			break;
 		}
 		case 3: { // problemID
+			obj.problemId = parseInt(arg);
 			break;
 		}
 		case 4: { // problemName
+			obj.problemName =  arg;
 			break;
 		}
 		case 5: { // problemDim
+			obj.problemDim = parseInt(arg);
 			break;
 		}
 		case 6: { // [problemParams]
-			arg = JSON.parse(arg);
+			obj.problemParams = parseArray();
 			break;
 		}
 	}
@@ -111,7 +145,21 @@ function parseArgs(obj, arg, argNum) {
 * @param string 	line 	String of one line of the input
 */
 function parseLine(obj, line) {
-
+	var lineObj = {};
+	// Check if last char in line is ";", if not add it (to make sure the loop works)
+	if(line[line.length -1] !== ';'){
+		line += ';';
+	}
+	indexOfAll(line, ';', function(index, prev, count){
+		prev = prev > 0 ? prev + 1 : prev; // If previous index is above 0, add 1 (because that index is the ";")
+		var item =  this.substring(prev, index);
+		if('' === item) {
+			return false;
+		}
+		console.log(prev + ": " + index + '--------' + count);
+		console.log(item);
+	});
+	obj.steps.push(lineObj);
 }
 
 
