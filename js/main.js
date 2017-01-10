@@ -28,7 +28,7 @@ var exampleInput  = ''+
 */
 function parseInput(input){
 	var rtrn = {};
-	rtrn.steps = []; // Algorithm steps will be stored in array
+	rtrn.steps = []; // Algorithm steps will be stored in an array
 	// Parsing arguments
 	indexOfAll(input, ';', function(index, prev, count){
 		prev = prev > 0 ? prev + 1 : prev; // If previous index is above 0, add 1 (because that index is the ";")
@@ -167,43 +167,43 @@ function parseLine(obj, line) {
 
 
 
-function onFileChanged(evt){
- 	//Retrieve all the files from the FileList object
- 	var files = evt.target.files;
+function onFileChanged(evt) {
+	//Retrieve all the files from the FileList object
+	var files = evt.target.files;
 
- 	if (files) {
- 		for (var i = 0, f; f = files[i]; i++) {
- 			var r = new FileReader();
- 			r.onload = (function (f) {
- 				return function (e) {
- 					var contents = e.target.result;
- 					parseInput(contents);
- 				};
- 			})(f);
- 			r.readAsText(f);
- 		}
- 	} else {
- 		alert("Failed to load files");
- 	}
- }
+	if (files) {
+		for (var i = 0, f; f = files[i]; i++) {
+			var r = new FileReader();
+			r.onload = (function (f) {
+				return function (e) {
+					var contents = e.target.result;
+					parseInput(contents);
+				};
+			})(f);
+			r.readAsText(f);
+		}
+	} else {
+		alert("Failed to load files");
+	}
+}
 
- function drawGraph(container) {
- 	var c = document.getElementById("myCanvas");
- 	var ctx = c.getContext("2d");
- 	ctx.moveTo(0,0);
- 	ctx.lineTo(200,100);
- 	ctx.stroke();
+function drawGraph(container) {
+	var c = document.getElementById("myCanvas");
+	var ctx = c.getContext("2d");
+	ctx.moveTo(0,0);
+	ctx.lineTo(200,100);
+	ctx.stroke();
 
- 	var c = document.getElementById("myCanvas");
- 	var ctx = c.getContext("2d");
- 	ctx.beginPath();
- 	ctx.arc(95,50,40,0,2*Math.PI);
- 	ctx.stroke();
- }
+	var c = document.getElementById("myCanvas");
+	var ctx = c.getContext("2d");
+	ctx.beginPath();
+	ctx.arc(95,50,40,0,2*Math.PI);
+	ctx.stroke();
+}
 
- $(document).ready(function(){
- 	$('#file').on('change', onFileChanged);
- 	drawGraph();
+$(document).ready(function(){
+	$('#file').on('change', onFileChanged);
+	drawGraph();
 
- 	parseInput(exampleInput);
- });
+	parseInput(exampleInput);
+});
