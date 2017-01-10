@@ -11,7 +11,14 @@ Speed (10xslow), load, play
 2dGraph [x_a,x_b] ali [fit, x_a]
 Več grafov;
 */
+
+// Static globals
 var GLOBAL_ARGS_NUM = 7; // Number of arguments in the first line (global)
+// Non-static globals
+var GLOBAL_PLAY_SPEED = 150; // Playback speed of the animation
+var GLOBAL_ANIMATION_DATA = {}; // Parsed animation data
+var GLOBAL_CTX_ARR = []; // Array of canvas contexes
+
 
 var exampleInput  = ''+
 '1;ime1;["param1","param2","param3"];1;problem1;3;["param1","param2"];'+
@@ -46,7 +53,6 @@ function parseInput(input){
 	});
 	//Parse the remaining lines
 	indexOfAll(input, ['{','}'], function(index, prev, count){
-
 		if(0 === prev) //If we found the first "{" pass
 			return false;
 		prev += 1; // Add 1  to prev (because that index is the "{" or "}")
@@ -56,7 +62,6 @@ function parseInput(input){
 		}
 		parseLine(rtrn, item);
 	});
-	console.log(rtrn);
 	return rtrn;
 }
 
@@ -186,8 +191,8 @@ function onFileChanged(evt) {
 		alert("Failed to load files");
 	}
 }
-
-function drawGraph(container) {
+/*
+function drawGraph(data, container) {
 	var c = document.getElementById("myCanvas");
 	var ctx = c.getContext("2d");
 	ctx.moveTo(0,0);
@@ -199,11 +204,70 @@ function drawGraph(container) {
 	ctx.beginPath();
 	ctx.arc(95,50,40,0,2*Math.PI);
 	ctx.stroke();
+}*/
+
+function stepGen(data) {
+
+}
+
+function step(stepData, globals = null) {
+
+}
+
+function play() {
+
+}
+
+function stop() {
+
+}
+/*
+var elem = document.getElementById('my-element'),
+startTime = null,
+endPos = 500, // in pixels
+duration = 2000; // in milliseconds
+
+function render(time) {
+	if (time === undefined) {
+		time = new Date().getTime();
+	}
+	if (startTime === null) {
+		startTime = time;
+	}
+
+	elem.style.left = ((time - startTime) / duration * endPos % endPos) + 'px';
+}
+
+elem.onclick = function() {
+	(function animationLoop(){
+		render();
+		requestAnimationFrame(animationLoop, elem);
+	})();
+};*/
+
+function bindEvents() {
+	// TODO: play/stop
+	$('.btn-play')
+	.off('click')
+	.on('click',function(){
+		play();
+	});
+	$('.btn-step')
+	.off('click')
+	.on('click',function(){
+		step();
+	});
+	$('.btn-step-gen')
+	.off('click')
+	.on('click',function(){
+		stepGen();
+	});
+
 }
 
 $(document).ready(function(){
+	bindEvents();
 	$('#file').on('change', onFileChanged);
-	drawGraph();
+	GLOBAL_ANIMATION_DATA = parseInput(exampleInput);
 
-	parseInput(exampleInput);
 });

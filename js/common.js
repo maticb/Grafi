@@ -81,3 +81,6 @@ function indexOfAll(str, val, callback) {
 function parseArray(input){
 	return JSON.parse(input);
 }
+
+
+
