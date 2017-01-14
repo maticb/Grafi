@@ -205,22 +205,6 @@ function drawGraph(data, container) {
 	ctx.arc(95,50,40,0,2*Math.PI);
 	ctx.stroke();
 }*/
-
-function stepGen(data) {
-
-}
-
-function step(stepData, globals = null) {
-
-}
-
-function play() {
-
-}
-
-function stop() {
-
-}
 /*
 var elem = document.getElementById('my-element'),
 startTime = null,
@@ -244,6 +228,52 @@ elem.onclick = function() {
 		requestAnimationFrame(animationLoop, elem);
 	})();
 };*/
+
+/*
+* Performs all steps within one generation
+* @param object 	data 	Data object for the algorithm we are currently animating
+*/
+function stepGen(data) {
+
+}
+
+/*
+* Performs one step of the algorithm
+* @param object 	stepData 	Data object for the current step
+* @param object 	globals 	Global values for the loaded algorithm
+*/
+function step(stepData, globals = null) {
+
+}
+
+/*
+* Starts playback
+*/
+function play() {
+
+}
+
+/*
+* Stops playback
+*/
+function stop() {
+
+}
+
+/*
+* Transforms (scales) coordinates from problem dimensions to the physical dimensions on the canvas
+* @param object 	ctx 	Canvas context object
+* @param integer 	x 		Value of X
+* @param integer 	y 		Value of Y
+* @param integer 	maxX 	Maximum value of X for given problem
+* @param integer 	maxY 	Maximum value of Y for given problem
+*/
+function coordinateTransform(ctx, x, y, maxX, maxY) {
+	var $el = $(ctx.el);
+	var x = maxX / ctx.width * x;
+	var y = maxY / ctx.height * y;
+	return {x:x, y:y};
+}
 
 function bindEvents() {
 	// TODO: play/stop
@@ -269,5 +299,9 @@ $(document).ready(function(){
 	bindEvents();
 	$('#file').on('change', onFileChanged);
 	GLOBAL_ANIMATION_DATA = parseInput(exampleInput);
-
+	GLOBAL_CTX_ARR.push({
+		el: document.getElementById("myCanvas"),
+		width: 200,
+		height: 100,
+	});
 });
