@@ -12,13 +12,6 @@ Speed (10xslow), load, play
 Več grafov;
 */
 
-// Static globals
-var GLOBAL_ARGS_NUM = 7; // Number of arguments in the first line (global)
-// Non-static globals
-var GLOBAL_PLAY_SPEED = 150; // Playback speed of the animation
-var GLOBAL_ANIMATION_DATA = {}; // Parsed animation data
-var GLOBAL_CTX_ARR = []; // Array of canvas contexes
-
 
 var exampleInput  = ''+
 '1;ime1;["param1","param2","param3"];1;problem1;3;["param1","param2"];'+
@@ -230,11 +223,25 @@ elem.onclick = function() {
 };*/
 
 /*
+* Check if data is loaded
+*/
+function isLoaded() {
+	return true === GLOBAL_IS_LOADED ? true : false;
+}
+
+/*
+* Check if animation is playing
+*/
+function isPlaying() {
+	return undefined !== GLOBAL_REQUEST_LOOP ? true : false;
+}
+
+/*
 * Performs all steps within one generation
 * @param object 	data 	Data object for the algorithm we are currently animating
 */
 function stepGen(data) {
-
+	//TODO: implement
 }
 
 /*
@@ -243,21 +250,35 @@ function stepGen(data) {
 * @param object 	globals 	Global values for the loaded algorithm
 */
 function step(stepData, globals = null) {
+	//TODO: implement
+}
 
+/*
+* Main animation loop
+*/
+function animationLoop() {
+	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop, canvas);
 }
 
 /*
 * Starts playback
 */
 function play() {
-
+	if(!isLoaded())
+		return;
+	if (!isPlaying()) {
+		animationLoop();
+	}
 }
 
 /*
 * Stops playback
 */
 function stop() {
-
+	if (isPlaying()) {
+		window.cancelAnimationFrame(GLOBAL_REQUEST_LOOP);
+		GLOBAL_REQUEST_LOOP = undefined;
+	}
 }
 
 /*

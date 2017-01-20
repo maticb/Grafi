@@ -40,6 +40,32 @@ popup.hidePopup = function(){
 }
 
 
+/* Message */
+var message = {};
+/*
+* Display error/warning message
+* @param string 	errMsg 	Text of the message to be displayed
+* @param string 	type 	Error message type (error/warn)
+*/
+message.display = function(errMsg, type = 'error') {
+	//TODO: implement
+	switch(type) {
+		case 'error': {
+			break;
+		}
+		case 'warn': {
+			break;
+		}
+	}
+};
+
+message.hide = function() {
+	// TODO: implement
+};
+
+
+
+
 /*
 * Loops over all items of a given string/array and triggers callback if item matches value
 * @param string/array 	str 		String or array over which to loop
@@ -81,6 +107,3 @@ function indexOfAll(str, val, callback) {
 function parseArray(input){
 	return JSON.parse(input);
 }
-
-
-
