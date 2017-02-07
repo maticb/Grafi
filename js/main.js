@@ -30,7 +30,7 @@ function parseInput(input){
 	var rtrn = {};
 	rtrn.steps = []; // Algorithm steps will be stored in an array
 	// Parsing arguments
-	indexOfAll(input, ';', function(index, prev, count){
+	util.indexOfAll(input, ';', function(index, prev, count){
 		prev = prev > 0 ? prev + 1 : prev; // If previous index is above 0, add 1 (because that index is the ";")
 		var item =  this.substring(prev, index);
 		if('' === item) {
@@ -45,7 +45,7 @@ function parseInput(input){
 		//console.log(index + ' ' + prev);
 	});
 	//Parse the remaining lines
-	indexOfAll(input, ['{','}'], function(index, prev, count){
+	util.indexOfAll(input, ['{','}'], function(index, prev, count){
 		if(0 === prev) //If we found the first "{" pass
 			return false;
 		prev += 1; // Add 1  to prev (because that index is the "{" or "}")
@@ -76,7 +76,7 @@ function parseArgs(obj, arg, argNum) {
 			break;
 		}
 		case 2: { // [algParams]
-			obj.algParams = parseArray(arg);
+			obj.algParams = util.parseArray(arg);
 			break;
 		}
 		case 3: { // problemID
@@ -92,7 +92,7 @@ function parseArgs(obj, arg, argNum) {
 			break;
 		}
 		case 6: { // [problemParams]
-			obj.problemParams = parseArray(arg);
+			obj.problemParams = util.parseArray(arg);
 			break;
 		}
 	}
@@ -115,7 +115,7 @@ function parseLineArg(obj, arg, argNum) {
 			break;
 		}
 		case 2: { // [parentIds]
-			obj.parentIds = parseArray(arg);
+			obj.parentIds = util.parseArray(arg);
 			break;
 		}
 		case 3: { // timestamp
@@ -132,7 +132,7 @@ function parseLineArg(obj, arg, argNum) {
 			break;
 		}
 		case 6: { // [x]
-			obj.x = parseArray(arg);
+			obj.x = util.parseArray(arg);
 			break;
 		}
 
@@ -152,7 +152,7 @@ function parseLine(obj, line) {
 	if(line[line.length -1] !== ';'){
 		line += ';';
 	}
-	indexOfAll(line, ';', function(index, prev, count){
+	util.indexOfAll(line, ';', function(index, prev, count){
 		prev = prev > 0 ? prev + 1 : prev; // If previous index is above 0, add 1 (because that index is the ";")
 		var item =  this.substring(prev, index);
 		if('' === item) {
@@ -252,21 +252,45 @@ function stepGen(data) {
 function step(stepData, globals = null) {
 	//TODO: implement
 }
-
 /*
 * Main animation loop
 */
 function animationLoop() {
+	//TODO: Loop stuff
+	console.log(1);
+	// Request next frame
 	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop, canvas);
 }
+/*
+* Spawns a canvas with the given id
+* @param integer 	id 	Canvas id
+*/
+function spawnCanvas(id) {
+	// TODO: implement
+}
+
+/*
+* Setups the page for playback (proper number of canvas elements)
+* @param object 	data 	Data object for the algorithm we are currently animating
+*/
+function playSetup(data) {
+	var dimensions = util.getProp(data, 'problemDim', 'integer');
+	var canvasId = 0;
+	for(var i = 0; i < dimensions; i += 2) {
+		// Spawn canvas for every 2 dimensions
+		spawnCanvas(canvasId++);
+	}
+}
+
 
 /*
 * Starts playback
 */
 function play() {
-	if(!isLoaded())
-		return;
-	if (!isPlaying()) {
+	if (/*isLoaded() &&*/ !isPlaying()) {
+		// Set up the canvases
+		playSetup();
+		// Play the animation
 		animationLoop();
 	}
 }
@@ -320,9 +344,10 @@ $(document).ready(function(){
 	bindEvents();
 	$('#file').on('change', onFileChanged);
 	GLOBAL_ANIMATION_DATA = parseInput(exampleInput);
-	GLOBAL_CTX_ARR.push({
+	console.log(GLOBAL_ANIMATION_DATA);
+	/*GLOBAL_CTX_ARR.push({
 		el: document.getElementById("myCanvas"),
 		width: 200,
 		height: 100,
-	});
+	});*/
 });

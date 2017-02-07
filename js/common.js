@@ -46,8 +46,9 @@ var message = {};
 * Display error/warning message
 * @param string 	errMsg 	Text of the message to be displayed
 * @param string 	type 	Error message type (error/warn)
+* @param integer 	timeout Amount of the time the message is shown before fading
 */
-message.display = function(errMsg, type = 'error') {
+message.display = function(errMsg, type = 'error', timeout = 1500) {
 	//TODO: implement
 	switch(type) {
 		case 'error': {
@@ -59,12 +60,13 @@ message.display = function(errMsg, type = 'error') {
 	}
 };
 
-message.hide = function() {
+message.hideAll = function() {
 	// TODO: implement
 };
 
 
-
+// Utils
+var util = {};
 
 /*
 * Loops over all items of a given string/array and triggers callback if item matches value
@@ -72,7 +74,7 @@ message.hide = function() {
 * @param string/integer	val 		Value to be compared with looped items
 * @param function 		callback 	Callback function, triggered when item is matched with val
 */
-function indexOfAll(str, val, callback) {
+util.indexOfAll = function(str, val, callback) {
 	// Compare value function, in case given value is array
 	function compareVal(val1) {
 		if('object' === typeof val){ // If val is array
@@ -100,10 +102,38 @@ function indexOfAll(str, val, callback) {
 	}
 }
 
+
 /*
 * Universal function that parses array from argument string
 * @param string 	input 		String (JSON) of the given argument
 */
-function parseArray(input){
+util.parseArray = function(input){
 	return JSON.parse(input);
+}
+
+/*
+* Check if object has property and returns it, else undefined
+* Also parses property into a type if given
+* @param object 	obj 		Any given object
+* @param string 	propName 	Property name
+* @param string 	propType 	Property type
+*/
+util.getProp = function(obj, propName, propType = null) {
+
+	if(obj.hasOwnProperty(propName)) {
+		var rtrn = obj[propName];
+		if('integer' === propType)
+			return parseInt(rtrn);
+		// If no proptype is given
+		return rtrn;
+	}
+	return undefined;
+}
+
+/*
+* Clones object
+* @param object 	obj 		Any given object
+*/
+util.clone = function(obj) {
+	return JSON.parse(JSON.stringify(obj));
 }
