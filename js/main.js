@@ -259,14 +259,20 @@ function animationLoop() {
 	//TODO: Loop stuff
 	console.log(1);
 	// Request next frame
-	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop, canvas);
+	//GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop, canvas);
 }
 /*
 * Spawns a canvas with the given id
 * @param integer 	id 	Canvas id
 */
 function spawnCanvas(id) {
-	// TODO: implement
+	var container = $('.graphs-container');
+	var c = util.clone(GLOBAL_DEFAULT_CANVAS_SETTING);
+	c.id = id;
+	c.canvas = $('<canvas/>').height(c.height).width(c.width);
+	container.append(c.canvas);
+	c.ctx = c.canvas[0].getContext('2d');
+	GLOBAL_CANVAS_ARR.push(c);
 }
 
 /*
@@ -280,6 +286,7 @@ function playSetup(data) {
 		// Spawn canvas for every 2 dimensions
 		spawnCanvas(canvasId++);
 	}
+	console.log(GLOBAL_CANVAS_ARR);
 }
 
 
@@ -289,7 +296,7 @@ function playSetup(data) {
 function play() {
 	if (/*isLoaded() &&*/ !isPlaying()) {
 		// Set up the canvases
-		playSetup();
+		playSetup(GLOBAL_ANIMATION_DATA);
 		// Play the animation
 		animationLoop();
 	}
@@ -350,4 +357,7 @@ $(document).ready(function(){
 		width: 200,
 		height: 100,
 	});*/
+
+	//TMP
+	play();
 });

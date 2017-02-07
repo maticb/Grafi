@@ -2,10 +2,19 @@
 var GLOBAL_ARGS_NUM = 7; // Number of arguments in the first line (global)
 
 // Default values
+var GLOBAL_DEFAULT_CANVAS_SETTING = {
+	id: -1,
+	canvas: undefined,
+	ctx: undefined,
+	width: 300,
+	height: 300,
+	xTitle: 'X',
+	yTitle: 'Y',
+};
 
 // Non-static globals
 var GLOBAL_ANIMATION_DATA = {}; // Parsed animation data
-var GLOBAL_CTX_ARR = []; // Array of canvas contexes
+var GLOBAL_CANVAS_ARR = []; // Array of canvases
 
 // Playback
 var GLOBAL_REQUEST_LOOP = undefined; // Request loop

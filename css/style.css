@@ -65,3 +65,9 @@ body,html {
 	min-height: 500px;
 	display:block;
 }
+
+canvas {
+	box-sizing: border-box;
+	border:1px solid black;
+	margin:5px;
+}
