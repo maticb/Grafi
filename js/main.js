@@ -55,6 +55,10 @@ function parseInput(input){
 		}
 		parseLine(rtrn, item);
 	});
+	// If new data is loaded, canvases must be re-set up
+	GLOBAL_IS_SETUP = false;
+	// Data is loaded
+	GLOBAL_IS_LOADED  = true;
 	return rtrn;
 }
 
@@ -237,6 +241,13 @@ function isPlaying() {
 }
 
 /*
+* Check if canvases are setup
+*/
+function isSetup() {
+	return true === GLOBAL_IS_SETUP ? true : false;
+}
+
+/*
 * Performs all steps within one generation
 * @param object 	data 	Data object for the algorithm we are currently animating
 */
@@ -252,26 +263,44 @@ function stepGen(data) {
 function step(stepData, globals = null) {
 	//TODO: implement
 }
+
 /*
 * Main animation loop
 */
 function animationLoop() {
-	//TODO: Loop stuff
-	console.log(1);
+	// If canvases are setup
+	if(isSetup()) {
+		//TODO: Loop stuff
+		console.log(' Loop');
+	}
 	// Request next frame
-	//GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop, canvas);
+	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop);
 }
+/*
+* Clears all canvases
+*/
+function clearCanvases(){
+	// Loop in reverse so the splice function works properly!
+	// (And also we get numbering from 0 in JS array, unlike what happens when using DELETE)
+	for(var i = GLOBAL_CANVAS_ARR.length - 1; i >= 0 ; i-- ) {
+		GLOBAL_CANVAS_ARR[i].canvas.remove();
+		GLOBAL_CANVAS_ARR.splice(i, 1);
+	}
+}
+
 /*
 * Spawns a canvas with the given id
 * @param integer 	id 	Canvas id
 */
 function spawnCanvas(id) {
 	var container = $('.graphs-container');
+	// Clone default settings
 	var c = util.clone(GLOBAL_DEFAULT_CANVAS_SETTING);
 	c.id = id;
 	c.canvas = $('<canvas/>').height(c.height).width(c.width);
 	container.append(c.canvas);
 	c.ctx = c.canvas[0].getContext('2d');
+	// Push into array
 	GLOBAL_CANVAS_ARR.push(c);
 }
 
@@ -280,13 +309,15 @@ function spawnCanvas(id) {
 * @param object 	data 	Data object for the algorithm we are currently animating
 */
 function playSetup(data) {
+	// Clear any previous canvases
+	clearCanvases();
 	var dimensions = util.getProp(data, 'problemDim', 'integer');
 	var canvasId = 0;
 	for(var i = 0; i < dimensions; i += 2) {
 		// Spawn canvas for every 2 dimensions
 		spawnCanvas(canvasId++);
 	}
-	console.log(GLOBAL_CANVAS_ARR);
+	GLOBAL_IS_SETUP = true;
 }
 
 
@@ -294,12 +325,13 @@ function playSetup(data) {
 * Starts playback
 */
 function play() {
-	if (/*isLoaded() &&*/ !isPlaying()) {
+	if (isLoaded() && !isPlaying()) {
 		// Set up the canvases
 		playSetup(GLOBAL_ANIMATION_DATA);
 		// Play the animation
 		animationLoop();
 	}
+	console.log(GLOBAL_CANVAS_ARR);
 }
 
 /*
@@ -332,7 +364,10 @@ function bindEvents() {
 	$('.btn-play')
 	.off('click')
 	.on('click',function(){
-		play();
+		if(!isPlaying())
+			play();
+		else
+			stop();
 	});
 	$('.btn-step')
 	.off('click')

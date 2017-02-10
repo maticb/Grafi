@@ -20,5 +20,6 @@ var GLOBAL_CANVAS_ARR = []; // Array of canvases
 var GLOBAL_REQUEST_LOOP = undefined; // Request loop
 var GLOBAL_IS_LOADED = false; // Boolean that indicates if any data is loaded (so we can start playback)
 var GLOBAL_IS_PLAYING = false; // Indicates if animation is playing
+var GLOBAL_IS_SETUP = false; // Indicates if canvas and other elements needed have been setup
 var GLOBAL_PLAY_STEP = 0;
 var GLOBAL_PLAY_GEN = 0;
