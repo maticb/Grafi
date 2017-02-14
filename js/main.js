@@ -55,6 +55,8 @@ function parseInput(input){
 		}
 		parseLine(rtrn, item);
 	});
+	// Put steps of same generations in combined arrays, to save compute time on rendering!
+	reOrderStepsIntoGenerations(rtrn);
 	// If new data is loaded, canvases must be re-set up
 	GLOBAL_IS_SETUP = false;
 	// Data is loaded
@@ -167,6 +169,31 @@ function parseLine(obj, line) {
 	obj.steps.push(lineObj);
 }
 
+
+/*
+* Puts steps of the same generation into an array to speed up rendering later
+* @param object 	data 	Input data object
+*/
+function reOrderStepsIntoGenerations(data) {
+	var currentGen = 1;
+	var currentGenSteps = [];
+	data.genSteps = [];
+	for(var i in data.steps) {
+		var step = data.steps[i];
+		// If we passed onto the next generation
+		if(currentGen + 1 === step.generation) {
+			currentGen++;
+			data.genSteps.push(currentGenSteps);
+			currentGenSteps = [];
+		}
+		currentGenSteps.push(step);
+	}
+
+	// If loop is finished and we still ahve some left, push it
+	if(currentGenSteps.length > 0 ) {
+		data.genSteps.push(currentGenSteps);
+	}
+}
 
 
 function onFileChanged(evt) {
