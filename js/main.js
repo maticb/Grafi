@@ -248,6 +248,18 @@ function isSetup() {
 }
 
 /*
+* Show a point on a given canvas
+*/
+function renderPoint(x, y = 0, ctxObj, maxX, maxY, color = '#FF0000') {
+	var ctx = ctxObj.ctx;
+	ctx.fillStyle = color;
+	var physicalCoords = coordinateTransform(ctxObj, x, y, maxX, maxY);
+	ctx.fillRect(physicalCoords.x, physicalCoords.y, 2, 2);
+	//Reset color back to black
+	ctx.fillStyle = '#000000';
+}
+
+/*
 * Performs all steps within one generation
 * @param object 	data 	Data object for the algorithm we are currently animating
 */
@@ -271,7 +283,7 @@ function animationLoop() {
 	// If canvases are setup
 	if(isSetup()) {
 		//TODO: Loop stuff
-		console.log(' Loop');
+		console.log('Loop');
 	}
 	// Request next frame
 	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop);
@@ -297,7 +309,12 @@ function spawnCanvas(id) {
 	// Clone default settings
 	var c = util.clone(GLOBAL_DEFAULT_CANVAS_SETTING);
 	c.id = id;
-	c.canvas = $('<canvas/>').height(c.height).width(c.width);
+	// Previous value of X
+	c.prevX = 0;
+	// Previous value of X
+	c.prevX = 0;
+	// Create a canvas element
+	c.canvas = $('<canvas/>').height(c.height).width(c.width).attr('height', c.height).attr('width', c.width);
 	container.append(c.canvas);
 	c.ctx = c.canvas[0].getContext('2d');
 	// Push into array
@@ -353,21 +370,20 @@ function stop() {
 * @param integer 	maxY 	Maximum value of Y for given problem
 */
 function coordinateTransform(ctx, x, y, maxX, maxY) {
-	var $el = $(ctx.el);
-	var x = maxX / ctx.width * x;
-	var y = maxY / ctx.height * y;
-	return {x:x, y:y};
+	var newX =  ctx.width / (maxX / x);
+	var newY =  ctx.height / (maxY / y);
+	return {x: newX, y: newY};
 }
 
 function bindEvents() {
 	// TODO: play/stop
 	$('.btn-play')
 	.off('click')
-	.on('click',function(){
-		if(!isPlaying())
-			play();
-		else
+	.on('click',function() {
+		if(isPlaying())
 			stop();
+		else
+			play();
 	});
 	$('.btn-step')
 	.off('click')
@@ -385,14 +401,9 @@ function bindEvents() {
 $(document).ready(function(){
 	bindEvents();
 	$('#file').on('change', onFileChanged);
+	//TMP parse
 	GLOBAL_ANIMATION_DATA = parseInput(exampleInput);
 	console.log(GLOBAL_ANIMATION_DATA);
-	/*GLOBAL_CTX_ARR.push({
-		el: document.getElementById("myCanvas"),
-		width: 200,
-		height: 100,
-	});*/
-
 	//TMP
 	play();
 });
