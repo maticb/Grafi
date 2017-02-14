@@ -249,21 +249,38 @@ function isSetup() {
 
 /*
 * Show a point on a given canvas
+* @param integer 	x 			X coordinate
+* @param integer 	y 			Y coordinate
+* @param object 	ctxObj 		Object with canvas data
+* @param integer 	maxX 		Maximum X coordinate of given problem
+* @param integer 	maxY 		Maximum Y coordinate of given problem
 */
-function renderPoint(x, y = 0, ctxObj, maxX, maxY, color = '#FF0000') {
+function renderPoint(x, y = 0, ctxObj, maxX, maxY, prevX = 0, prevY = 0,  drawLine = true, pointColor = '#FF0000', lineColor = '#000000') {
 	var ctx = ctxObj.ctx;
 	ctx.fillStyle = color;
 	var physicalCoords = coordinateTransform(ctxObj, x, y, maxX, maxY);
 	ctx.fillRect(physicalCoords.x, physicalCoords.y, 2, 2);
-	//Reset color back to black
+
+	// Add line from the previously drawn point
+	if(true === drawLine) {
+		ctx.fillStyle = lineColor;
+		var prevCoords = coordinateTransform(ctxObj, prevX, prevY, maxX, maxY);
+		ctx.beginPath();
+		ctx.moveTo(prevX, prevY);
+		ctx.lineTo(physicalCoords.x,physicalCoords.y);
+		ctx.stroke();
+	}
+
+	//Reset color Back to Black #ACDC
 	ctx.fillStyle = '#000000';
 }
 
 /*
 * Performs all steps within one generation
-* @param object 	data 	Data object for the algorithm we are currently animating
+* @param object 	data 		Data object for the algorithm we are currently animating
+* @param integer	genNumber	Generation number
 */
-function stepGen(data) {
+function stepGen(data, genNumber) {
 	//TODO: implement
 }
 
@@ -309,10 +326,6 @@ function spawnCanvas(id) {
 	// Clone default settings
 	var c = util.clone(GLOBAL_DEFAULT_CANVAS_SETTING);
 	c.id = id;
-	// Previous value of X
-	c.prevX = 0;
-	// Previous value of X
-	c.prevX = 0;
 	// Create a canvas element
 	c.canvas = $('<canvas/>').height(c.height).width(c.width).attr('height', c.height).attr('width', c.width);
 	container.append(c.canvas);
