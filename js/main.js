@@ -61,6 +61,9 @@ function parseInput(input){
 	GLOBAL_IS_SETUP = false;
 	// Data is loaded
 	GLOBAL_IS_LOADED  = true;
+	// Reset steps if new data is loaded
+	GLOBAL_PLAY_GEN = 1;
+	GLOBAL_PLAY_GEN_STEP = 0;
 	return rtrn;
 }
 
@@ -215,43 +218,6 @@ function onFileChanged(evt) {
 		alert("Failed to load files");
 	}
 }
-/*
-function drawGraph(data, container) {
-	var c = document.getElementById("myCanvas");
-	var ctx = c.getContext("2d");
-	ctx.moveTo(0,0);
-	ctx.lineTo(200,100);
-	ctx.stroke();
-
-	var c = document.getElementById("myCanvas");
-	var ctx = c.getContext("2d");
-	ctx.beginPath();
-	ctx.arc(95,50,40,0,2*Math.PI);
-	ctx.stroke();
-}*/
-/*
-var elem = document.getElementById('my-element'),
-startTime = null,
-endPos = 500, // in pixels
-duration = 2000; // in milliseconds
-
-function render(time) {
-	if (time === undefined) {
-		time = new Date().getTime();
-	}
-	if (startTime === null) {
-		startTime = time;
-	}
-
-	elem.style.left = ((time - startTime) / duration * endPos % endPos) + 'px';
-}
-
-elem.onclick = function() {
-	(function animationLoop(){
-		render();
-		requestAnimationFrame(animationLoop, elem);
-	})();
-};*/
 
 /*
 * Check if data is loaded
@@ -275,16 +241,35 @@ function isSetup() {
 }
 
 /*
+* Finds  step by id
+* @param integer 	id 		Id of the step we are searching for
+* @param integer 	genId 	Id of the generation to look in (can be null, and it will search throught all the steps)
+*/
+function findStepById(id, genId = null) {
+	var steps = GLOBAL_ANIMATION_DATA.steps;
+	if(genId !== null) {
+		steps = GLOBAL_ANIMATION_DATA.genSteps[genId - 1];
+	}
+	for(var i in steps) {
+		var step = steps[i];
+		if(step.id === id)
+			return step;
+	}
+}
+
+/*
 * Show a point on a given canvas
 * @param integer 	x 			X coordinate
 * @param integer 	y 			Y coordinate
 * @param object 	ctxObj 		Object with canvas data
 * @param integer 	maxX 		Maximum X coordinate of given problem
 * @param integer 	maxY 		Maximum Y coordinate of given problem
+* @param string 	pointColor 	Color of the point to draw
+* @param string 	lineColor 	Color of the line to draw
 */
 function renderPoint(x, y = 0, ctxObj, maxX, maxY, prevX = 0, prevY = 0,  drawLine = true, pointColor = '#FF0000', lineColor = '#000000') {
 	var ctx = ctxObj.ctx;
-	ctx.fillStyle = color;
+	ctx.fillStyle = pointColor;
 	var physicalCoords = coordinateTransform(ctxObj, x, y, maxX, maxY);
 	ctx.fillRect(physicalCoords.x, physicalCoords.y, 2, 2);
 
@@ -308,16 +293,52 @@ function renderPoint(x, y = 0, ctxObj, maxX, maxY, prevX = 0, prevY = 0,  drawLi
 * @param integer	genNumber	Generation number
 */
 function stepGen(data, genNumber) {
-	//TODO: implement
+	var generationData = data.genSteps[genNumber - 1];
+	for(; GLOBAL_PLAY_GEN_STEP < generationData.length; GLOBAL_PLAY_GEN_STEP++) {
+		step(generationData[GLOBAL_PLAY_GEN_STEP]);
+	}
+	// Move to next generation
+	GLOBAL_PLAY_GEN++;
+}
+
+/*
+* Finds proper canvas object of a given x iterator value
+* @param integer 	it 	Iterator value of x
+*/
+function findCanvasObjForX(it) {
+	if(0 === it || 1 === it)
+		return GLOBAL_CANVAS_ARR[0];
+	if(it % 2 === 0)
+		return GLOBAL_CANVAS_ARR[it / 2];
+	else
+		return GLOBAL_CANVAS_ARR[(it - 1) / 2 ];
 }
 
 /*
 * Performs one step of the algorithm
 * @param object 	stepData 	Data object for the current step
-* @param object 	globals 	Global values for the loaded algorithm
 */
-function step(stepData, globals = null) {
-	//TODO: implement
+function step(stepData) {
+	console.log(stepData);
+	var parent1 = -1 !== stepData.parentIds[0] ? findStepById(stepData.parentIds[0], stepData.generation - 1) : undefined;
+	var parent2 = -1 !== stepData.parentIds[1] ? findStepById(stepData.parentIds[1], stepData.generation - 1) : undefined;
+	// Loop throught all the x values of the step
+	for(var i = 0; i < stepData.x.length; i += 2) {
+		var x1 = stepData.x[i];
+		var x2 = stepData.x.length  > i + 1 ? stepData.x[i + 1] : 0;
+		console.log(i + ' === ' + x1 + ' ' + x2);
+		var drawLine = false;
+		var parentx1 = 0, parentx2 = 0;
+		if(undefined !== parent1) {
+			drawLine = true;
+			parentx1 = parent1.x[i];
+			parentx2 = parent1.x.length  < i + 1 ? parent1.x[i + 1] : 0;
+		}
+		var canvasObj = findCanvasObjForX(i);
+		console.log(canvasObj)
+		// TODO: hardcoded problem max X
+		renderPoint(x1, x2,  canvasObj, 100, 100, parentx1, parentx2, drawLine);
+	}
 }
 
 /*
@@ -326,8 +347,11 @@ function step(stepData, globals = null) {
 function animationLoop() {
 	// If canvases are setup
 	if(isSetup()) {
-		//TODO: Loop stuff
-		console.log('Loop');
+		stepGen(GLOBAL_ANIMATION_DATA, GLOBAL_PLAY_GEN);
+		// If we reached the last generation, stop playback
+		if(GLOBAL_PLAY_GEN > GLOBAL_ANIMATION_DATA.genSteps.length) {
+			stop();
+		}
 	}
 	// Request next frame
 	GLOBAL_REQUEST_LOOP = window.requestAnimationFrame(animationLoop);
