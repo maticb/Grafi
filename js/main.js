@@ -17,9 +17,9 @@ var exampleInput  = ''+
 '1;ime1;["param1","param2","param3"];1;problem1;3;["param1","param2"];'+
 '{1;1;[-1,-1];00000;1;5;[3,3,3]}'+
 '{2;1;[-1,-1];00000;1;3;[2,3,1]}'+
-'{3;1;[-1,-1];00000;1;4;[3,1,5]}'+
-'{4;1;[-1,-1];00000;1;2;[3,2,1]}'+
-'{5;2;[1,3];00001;1;5;[3,3,3]}'+
+'{3;1;[-1,-1];00000;1;4;[6,1,5]}'+
+'{4;1;[-1,-1];00000;1;2;[3,1,1]}'+
+'{5;2;[1,3];00001;1;5;[6,6,7]}'+
 '{6;2;[2,4];00001;1;3;[2,3,1]}';
 
 /*
@@ -278,7 +278,7 @@ function renderPoint(x, y = 0, ctxObj, maxX, maxY, prevX = 0, prevY = 0,  drawLi
 		ctx.fillStyle = lineColor;
 		var prevCoords = coordinateTransform(ctxObj, prevX, prevY, maxX, maxY);
 		ctx.beginPath();
-		ctx.moveTo(prevX, prevY);
+		ctx.moveTo(prevCoords.x, prevCoords.y);
 		ctx.lineTo(physicalCoords.x,physicalCoords.y);
 		ctx.stroke();
 	}
@@ -299,6 +299,8 @@ function stepGen(data, genNumber) {
 	}
 	// Move to next generation
 	GLOBAL_PLAY_GEN++;
+	// Reset step within generation
+	GLOBAL_PLAY_GEN_STEP = 0;
 }
 
 /*
@@ -319,25 +321,24 @@ function findCanvasObjForX(it) {
 * @param object 	stepData 	Data object for the current step
 */
 function step(stepData) {
-	console.log(stepData);
+	// TODO: inlcude both parents in drawing!
 	var parent1 = -1 !== stepData.parentIds[0] ? findStepById(stepData.parentIds[0], stepData.generation - 1) : undefined;
 	var parent2 = -1 !== stepData.parentIds[1] ? findStepById(stepData.parentIds[1], stepData.generation - 1) : undefined;
 	// Loop throught all the x values of the step
 	for(var i = 0; i < stepData.x.length; i += 2) {
 		var x1 = stepData.x[i];
 		var x2 = stepData.x.length  > i + 1 ? stepData.x[i + 1] : 0;
-		console.log(i + ' === ' + x1 + ' ' + x2);
 		var drawLine = false;
 		var parentx1 = 0, parentx2 = 0;
 		if(undefined !== parent1) {
 			drawLine = true;
 			parentx1 = parent1.x[i];
-			parentx2 = parent1.x.length  < i + 1 ? parent1.x[i + 1] : 0;
+			parentx2 = parent1.x.length  > i + 1 ? parent1.x[i + 1] : 0;
 		}
+
 		var canvasObj = findCanvasObjForX(i);
-		console.log(canvasObj)
 		// TODO: hardcoded problem max X
-		renderPoint(x1, x2,  canvasObj, 100, 100, parentx1, parentx2, drawLine);
+		renderPoint(x1, x2,  canvasObj, 10, 10, parentx1, parentx2, drawLine);
 	}
 }
 
